@@ -1,0 +1,114 @@
+<!--
+/* 
+
+字 size
+行距
+save config
+
+ */
+-->
+<meta charset="UTF-8">
+
+Preview (鼠標點擊更改位置)<br>
+
+<canvas id="preview"></canvas>
+<br><br>
+
+<form oninput="cn();">
+Text<br>
+<textarea id="text" cols="79" rows="12"></textarea>
+<br><br>
+Colour <input id="color" type="color" value="#99ff00">
+<br><br>
+Font Size px <input id="fn_size" type="number" value="21">
+<br><br>
+Font <input id="fn">( Microsoft JhengHei )
+</form>
+
+<script>
+
+var size = [1142,252];
+var pt = [0,0];
+var keydown=false;
+
+function do_preview(cfg){
+	draw_canvas(preview,cfg);
+}
+
+preview.width=size[0];
+preview.height=size[1];
+
+preview.onmousedown=function(e){
+	keydown=true;
+	var X = e.pageX - this.offsetLeft;
+	var Y = e.pageY - this.offsetTop;
+	pt = [X,Y];
+	cn();
+}
+onmouseleave=onmouseup=function(){keydown=false;}
+onmousemove=function(e){
+	if(!keydown) return;
+	var X = e.pageX - preview.offsetLeft;
+	var Y = e.pageY - preview.offsetTop;
+	pt = [X,Y];
+	cn();
+}
+
+
+function cn(){
+	do_preview(get_config());
+}
+
+function get_config(){
+	return {text:text.value,
+	        color:color.value,
+			size:fn_size.value,
+			fn:fn.value,
+			x:pt[0],y:pt[1]
+			};
+}
+
+
+</script>
+
+<script>
+function draw_canvas(canvas,cfg){
+	var ctx = canvas.getContext("2d");
+	ctx.clearRect(0,0,canvas.width,canvas.height);
+	ctx.textBaseline = "top"
+	ctx.fillStyle=cfg.color;
+	ctx.font = cfg.size + "px " + ctx.font.split(" ").slice(1).join(" ");
+	
+	var font = fn.value || ctx.font.split(" ").slice(1).join(" ");
+	
+	drawString(ctx, cfg.text, cfg.x,cfg.y,cfg.color,0,font,cfg.size);
+	
+	function drawString(ctx, text, posX, posY, textColor, rotation, font, fontSize) {
+		var lines = text.split("\n");
+		if (!rotation) rotation = 0;
+		if (!font) font = "'serif'";
+		if (!fontSize) fontSize = 16;
+		if (!textColor) textColor = '#000000';
+		ctx.save();
+		ctx.font = fontSize + "px " + font;
+		ctx.fillStyle = textColor;
+		ctx.translate(posX, posY);
+		ctx.rotate(rotation * Math.PI / 180);
+		for (i = 0; i < lines.length; i++) {
+			ctx.fillText(lines[i],0, i*fontSize);
+		}
+		ctx.restore();
+	}
+}
+</script>
+
+<style>
+#preview{
+	border: 1px solid black;
+	cursor: default;
+	background-color: #222;
+}
+body {
+	font-family: monospace;
+}
+</style>
