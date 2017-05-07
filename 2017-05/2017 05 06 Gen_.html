@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<style>
+body {
+	font-family: monospace;
+}
+.text {
+	width: 100%;
+}
+.text_layer td:nth-child(2) {
+	padding-left: 8px;
+}
+.text_layer-unactivated {
+	/*opacity: 0.5;*/
+}
+table td {
+	vertical-align: top;
+}
+table {
+	border-collapse: collapse;
+}
+.right {
+	border-left: 1px solid #c0c0c0;
+	padding-left: 8px;
+}
+
+span.color-picker {}
+span.color-picker input:not([type]) {
+	width: 8ch;
+}
+
+</style>
+</head>
+
+<body>
+<table border="0" id="main">
+  <tr>
+    <td>LocalStorage<br>
+    <br>
+    Max Size<br>
+    Default: 5MB<br>
+    <br></td>
+    <td class="right">
+
+<table border="0">
+  <tr>
+    <td>Image Preview (拖拉儲存）<br>
+    <img id="preview_img"></td>
+    <td> Canvas <br>
+<canvas id="preview"></canvas></td>
+  </tr>
+</table>
+<br>
+<div oninput="cn();" onchange="cn();">
+  <table border="0">
+    <tr>
+      <td>Background Image </td>
+      <td><label><input type="radio" name="bg_img" checked> Background Color <span id="bg_color" class="color-picker-unset" data-value="#222222"></span></label><br>
+      <label><input type="radio" name="bg_img"> URL <input id="bg_url"></label><br>
+      <label><input type="radio" name="bg_img"> Img File <input id="bg_file" type="file"></label></td>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+  <br>
+
+<div id="texts">
+<table border="0" oninput="/**/" class="text_layer text_layer-unactivated">
+  <tr>
+    <td width="600"><textarea class="text" rows="12"></textarea></td>
+    <td>
+      Colour <span class="color-picker-unset text_color" data-value="#99ff00"></span><br><br>
+
+Font Size px <input class="fn_size" type="number" value="21"><br>
+<br>
+Font <input class="fn">( Microsoft JhengHei )<br>
+
+      <table border="0">
+        <tr>
+          <td>Upload font</td>
+          <td><label><input type="radio" name="upload_font"> Upload <input class="fn_file" type="file"></label><br>
+<label><input type="radio" name="upload_font"> URL <input class="fn_url"></label><br>
+<label><input type="radio" name="upload_font" checked> Cancel</label></td>
+        </tr>
+      </table>
+      <br>
+      <p>
+        
+      </p>
+    </td>
+    <td><button class="btn-position">更改位置</button><br>
+<br>
+<br>
+<br>
+<br>
+<button class="btn-remove">Del This Text</button></td>
+  </tr>
+</table>
+</div>
+</div>
+</p>
+
+<span data-value="#123456"></span>
+
+</td>
+  </tr>
+</table>
+<script>
+var size=[810,270];
+
+
+preview_img.width = preview.width = size[0];
+preview_img.height = preview.height = size[1];
+
+</script>
+<script src="2017 05 06 Gen_.js"></script>
+</body>
+</html>

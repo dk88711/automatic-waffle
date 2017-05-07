@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<style>
+body {
+	font-family: monospace;
+}
+.text {
+	width: 100%;
+}
+.text_layer td:nth-child(2) {
+	padding-left: 8px;
+}
+table td {
+	vertical-align: top;
+}
+table {
+	border-collapse: collapse;
+}
+.right {
+	border-left: 1px solid #c0c0c0;
+	padding-left: 8px;
+}
+</style>
+</head>
+
+<body>
+<table border="0" id="main">
+  <tr>
+    <td>LocalStorage<br>
+    <br>
+    Max Size<br>
+    Default: 5MB<br>
+    <br></td>
+    <td class="right">
+
+<table border="0">
+  <tr>
+    <td>Image Preview (拖拉儲存）<br>
+    <img id="preview_img"></td>
+    <td> Canvas <br>
+<canvas id="preview"></canvas></td>
+  </tr>
+</table>
+<br>
+<div oninput="cn();" onchange="cn();">
+  <table border="0">
+    <tr>
+      <td>Background Image </td>
+      <td><label><input type="radio" name="bg_img" checked> Background Color #<input placeholder="222222"> <input type="color" value="#222222"></label><br>
+      <label><input type="radio" name="bg_img"> URL <input></label><br>
+      <label><input type="radio" name="bg_img"> Img File <input type="file"></label></td>
+    </tr>
+  </table>
+  <br>
+
+<table border="0" oninput="/**/" class="text_layer">
+  <tr>
+    <td width="600"><textarea name="textarea" class="text" rows="12"></textarea></td>
+    <td>
+      Colour #<input placeholder="99ff00"> <input type="color" value="#99ff00"><br><br>
+
+Font Size px <input id="fn_size" type="number" value="21"><br>
+<br>
+Font <input id="fn">( Microsoft JhengHei )<br>
+
+      <table border="0">
+        <tr>
+          <td>Upload font</td>
+          <td><label><input type="radio" name="upload_font"> Upload <input type="file"></label><br>
+<label><input type="radio" name="upload_font"> URL <input></label><br>
+<label><input type="radio" name="upload_font" checked> Cancel</label></td>
+        </tr>
+      </table>
+      <br>
+      <p>
+        
+      </p>
+    </td>
+    <td><button>更改位置</button></td>
+  </tr>
+</table>
+
+</div>
+</p>
+
+<span data-value="#123456"></span>
+
+</td>
+  </tr>
+</table>
+<script>
+var size=[810,270];
+
+
+preview_img.width = preview.width = size[0];
+preview_img.height = preview.height = size[1];
+
+</script>
+<script src="2017 05 06 Gen_.js"></script>
+</body>
+</html>

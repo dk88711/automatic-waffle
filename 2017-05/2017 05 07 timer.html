@@ -1,0 +1,110 @@
+<meta charset="utf-8">
+<style>
+body {
+	font-family: sans-serif;
+	font-size: 80vh;
+	text-align: center;
+}
+</style>
+<div id="clock"></div>
+<script>
+var str = location.search.slice(1);
+var duration_ms = 0;
+
+var show_hour = false;
+var show_ms = false;
+
+//====
+var a = split(str, "|", 3); //params
+function split(str, sep, n) {
+    arr = str.split(sep),
+    result = arr.splice(0,n-1);
+
+	result.push(arr.join(sep));
+	return result;
+}
+var end_text=a[2] || ""; //END Text
+if(a[0].indexOf("T")!=-1){
+	duration_ms = new Date(a[0]).getTime() - Date.now();
+}else if(a[0].indexOf(":")!=-1){
+	if(a[0].split(":").length - 1 > 1){
+		show_hour = true;
+	};
+	if(a[0].indexOf(".") != -1){
+		show_ms = true;
+	}
+	var nums = a[0].split(/[:.]/)
+	var i = 0;
+	if(show_hour){
+		duration_ms += parseFloat(nums[i])*3600*1000;
+		i++;
+	}
+	duration_ms += parseFloat(nums[i])*1000*60
+	              +parseFloat(nums[i+1])*1000;
+	if(show_ms){
+		duration_ms += parseFloat(nums[i+2]);
+	}
+} else {
+	duration_ms = parseFloat(a[0]) || 0;
+}
+if(a[1]){
+	a[1].split(",").forEach(function(e){
+		var b = e.split("=");
+		if(b[0] == "hr"){
+			show_hour = b[1]=="true";
+		}
+		if(b[0] == "ms"){
+			show_ms = b[1]=="true";
+		}
+		if(b[0] == "align"){
+			document.body.style.textAlign = b[1];
+		}
+	});
+}
+
+//====
+
+function fn(){
+	var ms_passed = Date.now() - start_time;
+	var remain_ms = duration_ms -  ms_passed;
+	clock.innerHTML = (remain_ms < 0) ? (end_text||getTimeString(0)) : getTimeString(remain_ms);
+}
+
+function getTimeString(ms){
+	if(!show_ms){
+		ms = ms + 999; //不顯示毫秒，秒數向上取整顯示更佳，
+		                //for remain_ms < 1000
+	}
+	var a = splitNum(ms,[1000,60,60]);
+	//[ms,sec,min,hr]
+	
+	show_hour||(a[2]=a[3]*60+a[2]);
+	
+	a[0] = ("000"+a[0]).slice(-3);
+	a[1] = ("00"+a[1]).slice(-2);
+	a[2] = ("00"+a[2]).slice(-2);
+	if(a[3] < 10){
+		a[3] = ("00"+a[3]).slice(-2);
+	}
+	
+	return (show_hour?a[3] + ":":"")+a[2]+":"+a[1]
+		+(show_ms?"."+a[0]:"");
+}
+
+function splitNum(num, arr){
+	var a = [];
+	for(var i = 0; i < arr.length; i++){
+		a.push(num % arr[i]);
+		num = (num / arr[i]) << 0;
+	}
+	a.push(num);
+	return a;
+}
+
+var start_time = Date.now();
+
+setInterval(fn,1);
+// hh:mm:ss.000
+
+// _.html
+</script>

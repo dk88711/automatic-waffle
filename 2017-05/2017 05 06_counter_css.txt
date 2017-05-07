@@ -1,0 +1,35 @@
+* {
+display:none !important;
+}
+html {
+display:unset !important;
+}
+body {
+display:unset !important;
+}
+body > div.splash-container {
+display:unset !important;
+}
+body > div.splash-container > div.splash {
+display:unset !important;
+}
+
+body > div.splash-container > div.splash > h1.splash-head.count.count_live.odometer.odometer-theme-minimal {
+display:unset !important;
+
+}
+
+body > div.splash-container > div.splash > h1.splash-head.count.count_live.odometer.odometer-theme-minimal * {
+display:unset !important;
+}
+
+
+body > div.splash-container > div.splash > h1.splash-head.count.count_live.odometer.odometer-theme-minimal {
+	color: white;
+	font-size: 100vh;
+}
+/*
+body {
+	background-color: black;
+}*/
+
