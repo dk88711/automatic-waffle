@@ -64,7 +64,7 @@ function split(str, sep, n) {
 	result.push(arr.join(sep));
 	return result;
 }
-var end_text=decodeURIComponent(a[2]) || ""; //END Text
+var end_text=(a[2] && decodeURIComponent(a[2])) || ""; //END Text
 if(a[0].indexOf("T")!=-1){
 	duration_ms = new Date(a[0]).getTime() - Date.now();
 }else if(a[0].indexOf(":")!=-1){
