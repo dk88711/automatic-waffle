@@ -16,8 +16,14 @@ body {
 .text_layer-unactivated {
 	/*opacity: 0.5;*/
 }
+.text_layer input[type=number] {
+	width: 8ch;
+}
 table td {
 	vertical-align: top;
+}
+.align-bottom {
+	vertical-align: bottom;
 }
 table {
 	border-collapse: collapse;
@@ -25,6 +31,13 @@ table {
 .right {
 	border-left: 1px solid #c0c0c0;
 	padding-left: 8px;
+}
+.selected {
+	background-color: #ebeff9;
+	outline: #9cc2ef solid 1px;
+}
+.hidden {
+	display: none;
 }
 
 span.color-picker {}
@@ -54,14 +67,18 @@ span.color-picker input:not([type]) {
   </tr>
 </table>
 <br>
-<div oninput="cn();" onchange="cn();">
+<table border="0">
+  <tr>
+    <td><div oninput="cn();" onchange="cn();">
   <table border="0">
     <tr>
       <td>Background Image </td>
-      <td><label><input type="radio" name="bg_img" checked> Background Color <span id="bg_color" class="color-picker-unset" data-value="#222222"></span></label><br>
-      <label><input type="radio" name="bg_img"> URL <input id="bg_url"></label><br>
-      <label><input type="radio" name="bg_img"> Img File <input id="bg_file" type="file"></label></td>
-      <td>&nbsp;</td>
+      <td><label><input type="radio" name="bg_img" value="color" checked> Background Color <span id="bg_color" class="color-picker-unset" data-value="#222222"></span></label><br>
+      <label><input type="radio" value="url" name="bg_img"> URL <input id="bg_url"></label><br>
+      <label><input type="radio" value="file" name="bg_img"> Img File <input id="bg_file" type="file"></label></td>
+      <td><button onclick="cn()">Update Image</button><br>
+<br>
+<span class="hidden" id="undo_text"><span id="removed_count">0</span> layer(s) removed <a href="javascript:void(0);" onclick="unremove();">Undo</a></span></td>
     </tr>
   </table>
   <br>
@@ -74,35 +91,69 @@ span.color-picker input:not([type]) {
       Colour <span class="color-picker-unset text_color" data-value="#99ff00"></span><br><br>
 
 Font Size px <input class="fn_size" type="number" value="21"><br>
+Line Height +/-(px) <input type="number" class="line_height" value="0" step="0.5"><br>
+
 <br>
 Font <input class="fn">( Microsoft JhengHei )<br>
 
       <table border="0">
         <tr>
           <td>Upload font</td>
-          <td><label><input type="radio" name="upload_font"> Upload <input class="fn_file" type="file"></label><br>
-<label><input type="radio" name="upload_font"> URL <input class="fn_url"></label><br>
-<label><input type="radio" name="upload_font" checked> Cancel</label></td>
+          <td><form><label><input type="radio" value="file" name="upload_font"> Upload <input class="fn_file" type="file"></label><br>
+<label><input type="radio" value="url" name="upload_font"> URL <input class="fn_url"></label><br>
+<label><input type="radio" value="cancel" name="upload_font" checked> Cancel</label></form></td>
         </tr>
       </table>
-      <br>
-      <p>
-        
-      </p>
     </td>
-    <td><button class="btn-position">更改位置</button><br>
-<br>
-<br>
-<br>
-<br>
+    <td><button class="btn-position">更改位置</button> <input type="number" value="0" class="posx">, <input type="number" value="0" class="posy">
+     <br><form>
+<table border="0">
+  <tr>
+    <td>text-align</td>
+    <td>vertical-align</td>
+  </tr>
+  <tr>
+    <td><label><input type="radio" name="align" value="left" checked> Left</label></td>
+    <td><label><input type="radio" name="baseline" value="top" checked> Top</label></td>
+  </tr>
+  <tr>
+    <td><label><input type="radio" name="align" value="center"> Center</label></td>
+    <td><label><input type="radio" name="baseline" value="hanging"> hanging</label></td>
+  </tr>
+  <tr>
+    <td><label><input type="radio" name="align" value="right"> Right</label></td>
+    <td><label><input type="radio" name="baseline" value="middle"> Middle</label></td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td><label><input type="radio" name="baseline" value="alphabetic"> Alphabetic</label></td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td><label><input type="radio" name="baseline" value="ideographic"> Ideographic</label></td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td><label><input type="radio" name="baseline" value="bottom"> Bottom</label></td>
+  </tr>
+</table>
+
+</form>
 <button class="btn-remove">Del This Text</button></td>
+    <td class="align-bottom"><button class="btn-up">Move Up</button><br><br>
+
+<button class="btn-down">Move Down</button></td>
   </tr>
 </table>
 </div>
-</div>
+</div></td>
+    <td>Loaded Font List</td>
+  </tr>
+</table>
+
+
 </p>
 
-<span data-value="#123456"></span>
 
 </td>
   </tr>
