@@ -1,4 +1,30 @@
 <!--
+?_PARAMs_
+
+3 parameters, "|" to split
+
+first parameter
+	3 type
+	-	YYYY-MM-DDThh:mm:ss.SSS+0800
+		 where +0800 is the timezone
+		count down to the UTC time
+	-	hh:mm:ss.000
+		set the remaining time
+	-	10000
+		set the remaining millisecond, this is 10 secs
+
+second parameter
+	"," to split
+	hr=true|flase           - show hour
+	ms=true|flase           - show millisecond
+	align=left|center|right - text-align
+	
+third parameter  -  text to show after time's up
+
+
+
+Examples:
+
 ?2017-05-09T00:00:00+0800||開始啦!應該係除非唔係
 
 ?2017-05-09T00:00:00+0800|hr=false,ms=true|開始啦!應該係除非唔係
