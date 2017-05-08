@@ -3,28 +3,52 @@ var selected_text_layer = null;
 var removed_text_layer = [];
 
 function cn(){ //fires changes /**/
-	console.log(123)
 	drawCanvas(preview, global_cfg);
 	preview_img.src = preview.toDataURL();
 }
 
+var cfgsList = [];
+
+function saveCfg(){
+	cfgsList.push();
+}
+
+function loadCfg(element){
+	
+}
+
+function genURL(){
+	text_url.value = location.origin+location.pathname
+	 + "?" + encodeURIComponent(serializeGlobalCfg());
+}
+nmp_link.href=location.origin+location.pathname;
 var template_text_layer = texts.children[0].cloneNode(true);
 
 addEventListener("load", function(){ /**/
 	init_text_layer(texts.children[0], global_cfg.texts[0]);
 	linkProperty(global_cfg.options.bg_img, "color", bg_color);
 	linkProperty(global_cfg.options.bg_img, "checked", "bg_img");
+	linkProperty(global_cfg.options.size, "0", size_w);
+	linkProperty(global_cfg.options.size, "1", size_h);
 	
 	//linkGlobalProperty("options.bg_img.url", bg_url);
 	
-	assignPositionPicker(preview);
 	
+	assignPositionPicker(preview);
+	updateLocalTextCount();
+	var cfg = location.search?decodeURIComponent(location.search.slice(1)):localStorage.getItem("cfg");
+	if(cfg){
+		init_elements_to_cfg(JSON.parse(cfg));
+	}
 	cn();
 });
-function init_text_layer(text_layer, text_cfg){ /**/
+function init_text_layer(text_layer, text_cfg, isActivated){ /**/
 	init_color_pickers();
-	textLayerDisabledStatus(text_layer,true);
+	isActivated || textLayerDisabledStatus(text_layer,true);
 	var unactivated = true;
+	if(isActivated){
+		unactivated = false;
+	}
 	text_layer.addEventListener("input",function(){
 		if(unactivated){
 			unactivated = false;
@@ -154,10 +178,111 @@ function init_text_layer(text_layer, text_cfg){ /**/
 		getClass("posx").value = x;
 		getClass("posy").value = y;
 	}
+	text_layer.setByCfg = function(){
+		getClass("text").value=text_cfg.text;
+		getClass("text_color").setValue(text_cfg.color);
+		getClass("fn_size").value=text_cfg.size;
+		getClass("fn").value=text_cfg.font;
+		radioSetVal("upload_font", text_cfg.upload.checked, text_layer);
+		getClass("fn_url").value=text_cfg.upload.url;
+		getClass("fn_url").value
+			&& getClass("fn_url")
+			.value.onchange.call(getClass("fn_url"));
+		getClass("posx").value=text_cfg.pos[0];
+		getClass("posy").value=text_cfg.pos[1];
+		radioSetVal("align", text_cfg.align, text_layer);
+		radioSetVal("baseline", text_cfg.baseline, text_layer);
+		
+	}
+	
 }
 
-function init_elements_form_cfg(cfg){ /**/
+function init_elements_to_cfg(cfg){ /**/
+	console.log(cfg)
+	try {
+		empty_elements_status();
+		mergeDeep(global_cfg, cfg);
+		bg_color.setValue(global_cfg.options.bg_img.color);
+		bg_url.value = global_cfg.options.bg_img.url;
+		bg_url.value && bg_url.onchange.call(bg_url);
+		radioSetVal("bg_img", global_cfg.options.bg_img.checked);
+		size_w.value = global_cfg.options.size[0];
+		size_h.value = global_cfg.options.size[1];
+		
+		var l = global_cfg.texts.length
+		for(var i = 0; i < l; i++){
+			text(global_cfg.texts[i], i);
+		}
+		
+		create_new_unactivated_text_layer();
+		
+	} catch(e) {
+		mergeDeep(global_cfg, DEFAULT_CFG);
+		console.log(e)
+	}
 	
+	function text(attr, i){
+		var text_layer = create_new_unactivated_text_layer(i, true);
+		text_layer.setByCfg();
+	}
+	
+}
+function radioSetVal(name, value, parent){
+	(parent || document).querySelector("*[name="
+		+name+"][value="+value+"]")
+		.checked = true;
+}
+//http://stackoverflow.com/questions/27936772/how-to-deep-merge-instead-of-shallow-merge
+/**
+ * Simple object check.
+ * @param item
+ * @returns {boolean}
+ */
+function isObject(item) {
+  return (item && typeof item === 'object' && !Array.isArray(item));
+}
+
+
+/**
+ * Deep merge two objects.
+ * @param target
+ * @param ...sources
+ */
+function mergeDeep(target, ...sources) {
+  if (!sources.length) return target;
+  const source = sources.shift();
+
+  if (isObject(target) && isObject(source)) {
+    for (const key in source) {
+      if (isObject(source[key])) {
+        if (!target[key]) Object.assign(target, { [key]: {} });
+        mergeDeep(target[key], source[key]);
+      } else if(Array.isArray(source[key])) {
+		  console.log(key)
+		  target[key].splice.apply(target[key],[0,target[key].length].concat(source[key]));
+	  } else {
+        Object.assign(target, { [key]: source[key] });
+      }
+    }
+  }
+
+  return mergeDeep(target, ...sources);
+}
+
+function empty_elements_status(){
+	var myNode = texts;
+	while (myNode.firstChild) {
+		myNode.removeChild(myNode.firstChild);
+	}
+	global_cfg.texts.splice(0, global_cfg.texts.length);
+	datas.img_url = null;
+	datas.img_file = null;
+	global_cfg.options.bg_img.file = null;
+	
+}
+
+onbeforeunload = function(){
+	localStorage.setItem("cfg", serializeGlobalCfg());
 }
 
 function unremove(){
@@ -172,6 +297,14 @@ function updateUndoText(){
 		undo_text.classList.remove("hidden");
 	}else{
 		undo_text.classList.add("hidden");
+	}
+}
+
+function updateLocalTextCount(){
+	locals_count.innerHTML = numberWithCommas(
+		JSON.stringify(localStorage).length - 2);
+	function numberWithCommas(x) {
+		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	}
 }
 
@@ -211,10 +344,15 @@ function setTextXY(event, target){
 	}
 }
 
-function create_new_unactivated_text_layer(){
+function create_new_unactivated_text_layer(textCfgIndex, isActivated){
 	var text_layer = template_text_layer.cloneNode(true);
 	texts.appendChild(text_layer);
-	init_text_layer(text_layer, createNewTextCfg());
+	if(textCfgIndex == null){
+		init_text_layer(text_layer, createNewTextCfg());
+	} else {
+		init_text_layer(text_layer, global_cfg.texts[textCfgIndex], isActivated);
+	}
+	return text_layer;
 }
 
 function textLayerDisabledStatus(ele, disabled){
@@ -397,6 +535,8 @@ function init_color_pickers(){
 		span.classList.remove("color-picker-unset");
 		span.classList.add("color-picker");
 		
+		span.setValue = fn_ensure;
+		
 	}
 };
 
@@ -410,6 +550,7 @@ var DEFAULT_CFG = {
 			params: [0, 0],
 			checked:"color", //color,url,file
 		},
+		size: [810, 270],
 	},
 	texts:[{
 		unactivated: true,
@@ -446,6 +587,10 @@ var web_fonts = {
 	
 } // url: {name:"", data: ""}
 
+var font_files_list = {
+	
+} // font_name:{data, file, file_name , should_save
+
 var template_text_cfg = JSON.parse(JSON.stringify(DEFAULT_CFG.texts[0]));
 
 function initCfg(){ /**/
@@ -465,6 +610,185 @@ function initCfg(){ /**/
 
 function parseCfg(cfg){ /**/
 	/**/
+}
+
+function serializeGlobalCfg(){
+	/* cfg in localStorage format:
+	{
+		options: {
+			bg_img:{
+				color:
+				url:
+				file_data:
+				params: [...]
+				checked:
+			}
+			size: [w, h]
+			
+		}
+		texts: [{
+			text:
+			color:
+			size:
+			font:
+			upload: {
+				url:
+				checked:
+			}
+			align:
+			baseline:
+			delta_line_height:
+			pos: [x, y]
+		} ...]
+		fonts: {
+			_font_name_: {
+				data:
+				file_name:
+			}
+		}
+	}
+	
+	custom font file -> to font name
+	
+	*/
+	
+	var obj = {};
+	
+	var file_name = null;
+	var file_data = null;
+	if(datas.img_file){
+		
+	}
+	
+	var modifier = {
+		options: {
+			bg_img:{
+				color: 1,
+				url: 1,
+				file_name: function(){return file_name;},
+				file_data: function(){return file_data;},
+				params: 1,
+				checked: 1,
+			},
+			size: 1,
+		},
+		texts: [function(fobj, farr, fval, value, i, modifierNode, oldObjNode){
+			var mod = ({
+				text: 1,
+				color: 1,
+				size: 1,
+				font: 1/*function(){return 0;}*/,
+				upload: {
+					url: 1,
+					checked: 1,
+				},
+				align: 1,
+				baseline: 1,
+				delta_line_height: 1,
+				pos: 1,
+			});
+			var nodeObj = oldObjNode[i];
+			if(nodeObj.unactivated){
+				return undefined;
+			}else{
+				return fval(mod, i, modifierNode, oldObjNode);
+			}
+		}, 1],
+		fonts: {
+			_font_name_: {
+				data: function(){return 0;},
+				file_name: function(){return 0;},
+			}
+		}
+	}
+	// function return undefined = ignore, otherwise 
+	// call with f(fobj, farr, fval, value, i, modifierNode, oldObjNode);
+	
+	
+	function doModify(modifier, cfg){
+		var obj = {};
+		
+		/*
+		function f(value, key, modifierNode, newObjNode, oldObjNode){ //copy from old to new
+			//modifierNode[key] = value
+			if(Array.isArray(value)){
+				/
+			} else if (Object.prototype.toString.call(value)
+				== "[object Function]"){
+				return value();
+			} else if (value === 1){
+				return oldObjNode[key];
+			} else { // object
+				var o = {};
+				
+				for(var i in value){
+					if(i.startsWith("_")){ //any
+						/*
+						break;
+					} else {
+						o[i] = f(value[i], i, value,  , oldObjNode[i]);
+					}
+				}
+				return o;
+			} 
+		}*/
+		
+		function fobj(modifierNode, oldObjNode){ //return newValue
+			var o = {};
+			for(var i in modifierNode){
+				if(i.startsWith("_")){
+					for(j in oldObjNode){
+						o[j] = fobj(value, oldObjNode[j]);
+					}
+					break;
+				}
+				var value = modifierNode[i];
+				o[i] = fval(value, i, modifierNode, oldObjNode);
+				
+			}
+			return o;
+		}
+		function farr(modifierNode, oldObjNode){ //[]
+			var a = [];
+			if(modifierNode[1] === 1){
+				for(var i = 0; i < oldObjNode.length; i++){
+					var result = fval(modifierNode[0]
+						, i, modifierNode, oldObjNode);
+					if(result === undefined){
+						continue;
+					}
+					a.push(result);
+				}
+			} else {
+				/**/
+			}
+			
+			return a;
+		}
+		function fval(value, i, modifierNode, oldObjNode){
+			if(Array.isArray(value)){
+				return farr(value, oldObjNode[i]);
+			} else if (Object.prototype.toString.call(value)
+				== "[object Function]"){
+				var fn_result = 
+					value(fobj, farr, fval, value, i, modifierNode, oldObjNode);
+				if(fn_result === undefined){
+					return undefined;
+				}
+				return fn_result;
+			} else if (value === 1){
+				return oldObjNode[i];
+			} else {
+				return fobj(value, oldObjNode[i]);
+			}
+		}
+		obj = fobj(modifier, cfg);
+		
+		return obj;
+	}
+	
+	obj = doModify(modifier, global_cfg);
+	return JSON.stringify(obj);
 }
 
 function ImageResourceLoader(res, callback){
@@ -571,6 +895,7 @@ function linkProperty(obj, property_name, DOM_ele, referenceNode, handler){ /**/
 			return DOM_ele.value;
 		}
 		DOM_ele.addEventListener("input", fn);
+		DOM_ele.addEventListener("change", fn);
 	}
 }
 /*
@@ -625,8 +950,17 @@ function createNewTextCfg(){
 	return new_cfg;
 }
 
+function resizeCanvas(canvas, cfg){
+	canvas.width = cfg.options.size[0];
+	canvas.height = cfg.options.size[1];
+}
+
 function drawCanvas(canvas, cfg){ /**/
 	var ctx = canvas.getContext("2d");
+	if(canvas.width != cfg.options.size[0]
+		|| canvas.height != cfg.options.size[1]){
+		resizeCanvas(canvas, cfg);
+	}
 	var w = canvas.width;
 	var h = canvas.height;
 	ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -635,6 +969,7 @@ function drawCanvas(canvas, cfg){ /**/
 	
 	var bg_img = cfg.options.bg_img;
 	ctx.save();
+	try{
 	switch(bg_img.checked){
 		case "color":
 			ctx.fillStyle = bg_img.color;
@@ -649,7 +984,7 @@ function drawCanvas(canvas, cfg){ /**/
 				[datas.img_file].concat(bg_img.params));
 			break;
 	}
-	
+	} catch(e){};
 	
 	//TEXTs ====
 	for(var i = 0; i < cfg.texts.length; i++){

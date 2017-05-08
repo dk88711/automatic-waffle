@@ -16,7 +16,7 @@ body {
 .text_layer-unactivated {
 	/*opacity: 0.5;*/
 }
-.text_layer input[type=number] {
+input[type=number] {
 	width: 8ch;
 }
 table td {
@@ -54,8 +54,18 @@ span.color-picker input:not([type]) {
     <td>LocalStorage<br>
     <br>
     Max Size<br>
-    Default: 5MB<br>
-    <br></td>
+    Default: 5MB<br><br>
+
+Usage<br>
+= <span id="locals_count">0</span> B<br>
+<br><br>
+<button onclick="localStorage.clear();updateLocalTextCount();onbeforeunload=null;">Clear All Stored Data</button>
+<br><!--
+<br><button onclick="saveCfg()">Save As New Config</button><div id="cfgs"></div>--><br>
+<button onclick="genURL()">generate URL</button><br>
+<input id="text_url"><br>
+<br>
+<a id="nmp_link">Normal Page Of This</a></td>
     <td class="right">
 
 <table border="0">
@@ -76,6 +86,7 @@ span.color-picker input:not([type]) {
       <td><label><input type="radio" name="bg_img" value="color" checked> Background Color <span id="bg_color" class="color-picker-unset" data-value="#222222"></span></label><br>
       <label><input type="radio" value="url" name="bg_img"> URL <input id="bg_url"></label><br>
       <label><input type="radio" value="file" name="bg_img"> Img File <input id="bg_file" type="file"></label></td>
+      <td>Size<br><input id="size_w" value="810" type="number"> x <input id="size_h" value="270" type="number"></td>
       <td><button onclick="cn()">Update Image</button><br>
 <br>
 <span class="hidden" id="undo_text"><span id="removed_count">0</span> layer(s) removed <a href="javascript:void(0);" onclick="unremove();">Undo</a></span></td>
@@ -162,8 +173,8 @@ Font <input class="fn">( Microsoft JhengHei )<br>
 var size=[810,270];
 
 
-preview_img.width = preview.width = size[0];
-preview_img.height = preview.height = size[1];
+/*preview_img.width = */preview.width = size[0];
+/*preview_img.height = */preview.height = size[1];
 
 </script>
 <script src="2017 05 06 Gen_.js"></script>
