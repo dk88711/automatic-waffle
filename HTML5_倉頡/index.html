@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+<!--
+倉頡碼表來源
+
+cangjie.txt
+https://searchcode.com/codesearch/view/73173183/
+
+倉頡字典
+https://play.google.com/store/apps/details?id=com.appdde.wordChangjie&hl=zh_HK
+
+-->
+<meta charset="utf-8">
+<title></title>
+<style>
+table td {
+	vertical-align: top;
+}
+table {
+	border-collapse: collapse;
+}
+//body {
+	font-family: monospace;
+}
+body {
+	font-family: Microsoft JhengHei;
+}
+#main {
+	font-family: DFKai-SB;
+	font-size: 26px;
+	color: blue;
+}
+#main-char{
+	font-size: 177px;
+	color: black;
+}
+#main-desc{
+	font-size: 36px;
+	color: black;
+}
+#main-score {
+	color: #630;
+}
+table tr.bottom td {
+	vertical-align: bottom;
+}
+table#result-table td:first-child {
+	text-align: center;
+}
+table#result-table td {
+	vertical-align: middle;
+	text-align: right;
+	padding: 0 8px;
+}
+</style>
+<script src="core.js"></script>
+</head>
+
+<body>
+<table width="100%" border="0">
+  <tr>
+    <td>倉頡<br>
+      <br>
+    <button onclick="active1()">倉頡碼字母練習</button> <button onclick="active2()">倉頡拆碼練習</button> <br>
+<br>
+<button onclick="active3()">自定義 - 隨機</button> <button onclick="active4()">自定義 - 順序</button><br><textarea id="custom_text"></textarea><br>
+ <div id="res_indicator"><span>Loading... </span><br>
+<span></span></div><br>
+<br>
+<div id="main">
+  <table border="0">
+    <tr>
+      <td colspan="5">分數： <span id="main-score"></span></td>
+      </tr>
+    <tr>
+      <td width="194">你的按鍵： <span id="main-ur-key"></span></td>
+      <td width="124" colspan="2">，<span id="main-ur-ch"></span></td>
+      <td width="140">提示： <span id="main-hint-key"></span></td>
+      <td width="108">，<span id="main-hint-ch"></span></td>
+    </tr>
+    <tr class="bottom">
+      <td colspan="2" id="main-desc">&nbsp;</td>
+      <td colspan="3" id="main-char">&nbsp;</td>
+      </tr>
+  </table>
+  <br>
+</div></td>
+    <td width="100">字典<br>
+      漢文庫典 <a href="http://hanculture.com/dic/index.php">http://hanculture.com/dic/index.php</a><br>
+      《Follow Me倉頡字典》線上查詢版 <br>
+      <a href="http://input.foruto.com/cccls/cjzd.html">http://input.foruto.com/cccls/cjzd.html</a><br>
+      <br>
+      介面參考自 <br>
+      <a href="https://www.ifreesite.com/typing/cangjie-2.htm">https://www.ifreesite.com/typing/cangjie-2.htm</a><br>
+      <a href="http://www.scj2000.com/cjselfstudyv1/new_page_2.htm">http://www.scj2000.com/cjselfstudyv1/new_page_2.htm</a><br>
+  其他材料<br>
+    <a href="https://zh.wikibooks.org/wiki/%E5%80%89%E9%A0%A1%E8%BC%B8%E5%85%A5%E6%B3%95/%E5%80%89%E9%A0%A1%E5%AD%97%E6%AF%8D%E8%88%87%E8%BC%94%E5%8A%A9%E5%AD%97%E5%BD%A2">https://zh.wikibooks.org/wiki/倉頡輸入法/倉頡字母與輔助字形<br>
+    <br>
+    </a><br>
+    <br>
+    倉頡檢索<br><textarea onchange="dictionary(this.value)"></textarea>
+      <br>
+      <br>
+    結果<br>
+    <table border="1" style="border-collapse:separate;" id="result-table">
+    <thead>
+      <tr>
+        <th width="50">&nbsp;</th>
+        <th width="125">碼表1</th>
+        <th width="125">碼表2</th>
+      </tr>
+      </thead>
+      <tbody id="dict-result">
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      </tbody>
+    </table></td>
+  </tr>
+</table>
+</body>
+</html>
