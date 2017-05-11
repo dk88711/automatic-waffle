@@ -454,6 +454,45 @@ function active4(){
 	
 }
 
+function active5(){
+	var list="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	var this_str = null;
+	var i = 0;
+	function getNext(){
+		/*not include 難*/
+		if(this_str == null || i >= this_str.length){ //get new random str
+			var new_str;
+			while(
+				(new_str = shuffle(list)).charAt(0) == 
+				(this_str && this_str.charAt(i-1)) ){};
+			i = 0;
+			this_str = new_str;
+		}
+		var target_char = this_str[i];
+		i ++;
+		//while (target_char = list
+		//	.charAt(Math.floor(Math.random() * list.length)))
+		div_main[0].innerHTML =
+			"<div style=\"font-family: Calibri, sans-serif;"
+			+"text-align: center\">"
+			+target_char+"</div>";
+		return target_char.toLowerCase().charCodeAt();
+	}
+	active(getNext);
+	
+	function shuffle (str) {
+		var a = str.split(""),
+			n = a.length;
+
+		for(var i = n - 1; i > 0; i--) {
+			var j = Math.floor(Math.random() * (i + 1));
+			var tmp = a[i];
+			a[i] = a[j];
+			a[j] = tmp;
+		}
+		return a.join("");
+	}
+}
 
 var keyHook = (function(){
 	
@@ -483,6 +522,7 @@ function dictionary(search_text){
 		res_ele.removeChild(res_ele.firstChild);
 	}
 	
+	/** old 
 	for(var i = 0; i < search_text.length; i++){
 		var this_char = search_text.charAt(i);
 		var a = (changjie2a[this_char]) || "";
@@ -493,6 +533,34 @@ function dictionary(search_text){
 		
 		res_ele.appendChild(tr([this_char, a, b]));
 	}
+	*/
+	
+	var arr = search_text.match(/[a-zA-Z]+|[^ ]/g);
+	for(var i in arr){
+		var v = arr[i];
+		if(/[a-zA-Z]/.test(v)){ //is Alphabet
+			var this_char = v;
+			var a = (changjie1[this_char]) || "";
+			a = (""+a);
+			
+			var b = (cangjie_key[this_char]) || "";
+			b = (""+b);
+			
+			res_ele.appendChild(tr([this_char, a, b]));
+			
+		} else { // single letter
+			var this_char = v;
+			var a = (changjie2a[this_char]) || "";
+			a = get_html(""+a);
+			
+			var b = (cangjie_char[this_char]) || "";
+			b = get_html(""+b);
+			
+			res_ele.appendChild(tr([this_char, a, b]));
+			
+		}
+	}
+	
 	
 	function get_html(str){
 		if(str){
