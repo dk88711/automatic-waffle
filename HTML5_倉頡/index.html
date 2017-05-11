@@ -42,6 +42,12 @@ body {
 #main-score {
 	color: #630;
 }
+#main td {
+	vertical-align: bottom;
+}
+#main span {
+	display: inline-block;
+}
 table tr.bottom td {
 	vertical-align: bottom;
 }
@@ -52,6 +58,7 @@ table#result-table td {
 	vertical-align: middle;
 	text-align: right;
 	padding: 0 8px;
+	white-space: pre;
 }
 </style>
 <script src="core.js"></script>
@@ -71,14 +78,14 @@ table#result-table td {
 <div id="main">
   <table border="0">
     <tr>
-      <td colspan="5">分數： <span id="main-score"></span></td>
+      <td colspan="3">分數： <span id="main-score"></span></td>
+      <td width="140" rowspan="2">提示： <span id="main-hint-key"></span></td>
+      <td width="108" rowspan="2">，<span id="main-hint-ch"></span></td>
       </tr>
     <tr>
       <td width="194">你的按鍵： <span id="main-ur-key"></span></td>
       <td width="124" colspan="2">，<span id="main-ur-ch"></span></td>
-      <td width="140">提示： <span id="main-hint-key"></span></td>
-      <td width="108">，<span id="main-hint-ch"></span></td>
-    </tr>
+      </tr>
     <tr class="bottom">
       <td colspan="2" id="main-desc">&nbsp;</td>
       <td colspan="3" id="main-char">&nbsp;</td>
@@ -99,7 +106,7 @@ table#result-table td {
     <br>
     </a><br>
     <br>
-    倉頡檢索<br><textarea onchange="dictionary(this.value)"></textarea>
+    倉頡檢索<br><textarea oninput="dictionary(this.value)" ></textarea>
       <br>
       <br>
     結果<br>

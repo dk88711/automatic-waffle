@@ -1,4 +1,4 @@
-var char="日月金木水火土竹戈十大中一弓人心手口尸廿山女田難卜";
+var char="日月金木水火土竹戈十大中一弓人心手口尸廿山女田難卜Z";
 
 var add_load_res;
 var res = {};
@@ -175,6 +175,7 @@ function active_empty(){
 }
 
 function active(genNext){
+	//call genNext, return str or str[..]
 	document.activeElement.blur();
 	active_empty();
 	var score = 0;
@@ -191,25 +192,45 @@ function active(genNext){
 	}
 	var targetKey = null; //keycode, lowercase
 	function showKey(keycode, ele_key, ele_ch){ //lowercase
-		var charcode = String.fromCharCode(keycode)
-			.toLowerCase().charCodeAt();
-		if(charcode < 97 || charcode > 122){
-			ele_key.innerHTML = "";
-			ele_ch.innerHTML = "";
-			return;
+		var arr_key = [];
+		var arr_ch = [];
+		
+		function key(keycode){
+			var charcode = String.fromCharCode(keycode)
+				.toLowerCase().charCodeAt();
+			if(charcode < 97 || charcode > 122){
+				return;
+			}
+			arr_key.push(String.fromCharCode(keycode));
+			arr_ch.push(char[charcode - 97]);
 		}
-		ele_key.innerHTML = String.fromCharCode(keycode);
-		ele_ch.innerHTML = char[charcode - 97];
+		if(Array.isArray(keycode)){
+			keycode.forEach(key);
+		} else {
+			key(keycode);
+		}
+		
+		
+		ele_key.innerHTML = arr_key.join("<br>");
+		ele_ch.innerHTML = arr_ch.join("<br>");
+	}
+	function isInTarget(charcode){
+		console.log(targetKey, charcode);
+		if(Array.isArray(targetKey)){
+			return targetKey.indexOf(charcode) != -1;
+		} else {
+			return targetKey == charcode;
+		}
 	}
 	keyHook(function(e){
 		var isCorrect;
 		var charcode = String.fromCharCode(e.keyCode)
 			.toLowerCase().charCodeAt();
-		if(targetKey && charcode == targetKey){
+		if(targetKey && isInTarget(charcode)/*charcode == targetKey*/){
 			isCorrect = true;
 			correct();
 			showKey("", div_main[5], div_main[6]);
-			targetKey = genNext();
+			targetKey = genNext(e.keyCode);
 		} else {
 			isCorrect = false;
 			wrong();
@@ -217,7 +238,7 @@ function active(genNext){
 		};
 		showKey(e.keyCode, div_main[3], div_main[4]);
 	});
-	targetKey = genNext();
+	targetKey = genNext(null);
 }
 
 function active1(){
@@ -262,24 +283,7 @@ function active2(){
 	active_empty();
 	
 	var this_char = null;
-	var this_keys = null; //str
 	var last_char = null;
-	var i = 0;
-	function getNext(){
-		i++;
-		if(this_char == null || i >= this_keys.length){
-			last_char = this_char;
-			while( (this_char = getRanChar()) == last_char ){};
-			// get_corr_keys ===
-			this_keys = cangjie_char[this_char][0] + " ";
-			div_main[0].innerHTML = this_char;
-			i = 0;
-		}
-		div_main[1].innerHTML = i+1 == this_keys.length ?
-			"請按空白棒" :
-			"請鍵入第"+(i+1)+"碼";
-		return this_keys.charCodeAt(i);
-	}
 	function getRanChar(){
 		//add_load_res("charlist.txt");
 		//add_load_res("charlist_5000.txt");
@@ -289,9 +293,13 @@ function active2(){
 			.charAt(Math.floor(
 			Math.random() * str.length));
 	}
+	function getNextChar(){
+		last_char = this_char;
+		while( (this_char = getRanChar()) == last_char ){};
+		return this_char;
+	}
 	
-	
-	active(getNext);
+	active2_extra(getNextChar);
 }
 
 function active2_extra(getNextChar){ //func should avoid repeat issue
@@ -300,6 +308,8 @@ function active2_extra(getNextChar){ //func should avoid repeat issue
 	var this_char = null;
 	var this_keys = null; //str
 	var last_char = null;
+	
+	/** old
 	var i = 0;
 	function getNext(){
 		i++;
@@ -315,13 +325,82 @@ function active2_extra(getNextChar){ //func should avoid repeat issue
 			"請按空白棒" :
 			"請鍵入第"+(i+1)+"碼";
 		return this_keys.charCodeAt(i);
+	}*/
+	
+	//arr to obj process:
+	// eg ["abce","abde"] =>
+	//    {a:{b:{c:{e:{" ":null}},d:{e:{" ":null}}}}}
+	function arr_to_obj(arr){
+		if(!arr){
+			return null;
+		}
+		
+		var o = {}; //"abcd" => a:[bcd] then convert 
+		arr.forEach(function(e){
+			if(e.length == 0){
+				o[" "] = null;
+				return;
+			}
+			var key = e.charAt(0);
+			if(key in o){
+				o[key].push(e.slice(1));
+			} else {
+				o[key] = [e.slice(1)];
+			}
+		});
+		for(var k in o){
+			if(o[k]){
+				o[k] = arr_to_obj(o[k]);
+			}
+		}
+		
+		return o;
+	}
+	//MAIN==
+	var i = 0;
+	function getNext(lastKeyCode){
+		if(lastKeyCode) {
+			var last_char = null;
+			lastKeyCode && (
+				last_char = String.fromCharCode(lastKeyCode)
+				.toLowerCase());
+			this_keys = this_keys[last_char];
+			i++;
+		}
+		if(this_keys == null){
+			this_char = getNextChar();
+			this_keys = arr_to_obj(cangjie_char[this_char]); //DATA
+			div_main[0].innerHTML = this_char;
+			i = 0;
+		}
+		
+		
+		innerHTML = [];
+		var keys = Object.keys(this_keys);
+		if (!(keys.length == 1 && keys[0] == " ")) {
+			innerHTML.push("請鍵入第"+(i+1)+"碼");
+		}
+		if ( keys.indexOf(" ") != -1){
+			innerHTML.push("請按空白棒");
+		}
+		
+		div_main[1].innerHTML = innerHTML.join("<br>");
+		return keys.map(function(e){return e.charCodeAt()});
 	}
 	
 	active(getNext);
 }
 
+function str_filter(str){ //cangjie_char
+	return str.split('').filter(function(word){
+		return cangjie_char[word] != null;
+	}).join('');
+}
+
 function active3(){
 	var str = document.getElementById("custom_text").value;
+	str = str_filter(str);
+	if(!str) return;
 	var isUnique = checkUnique(str);
 	
 	function checkUnique(str){
@@ -358,6 +437,8 @@ function active3(){
 
 function active4(){
 	var str = document.getElementById("custom_text").value;
+	str = str_filter(str);
+	if(!str) return;
 	var i = 0;
 	active2_extra(function(){
 		var this_char = str.charAt(i);
@@ -402,11 +483,11 @@ function dictionary(search_text){
 	
 	for(var i = 0; i < search_text.length; i++){
 		var this_char = search_text.charAt(i);
-		var a = (""+changjie2a[this_char]) || "";
-		a = get_html(a);
+		var a = (changjie2a[this_char]) || "";
+		a = get_html(""+a);
 		
-		var b = (""+cangjie_char[this_char]) || "";
-		b = get_html(b);
+		var b = (cangjie_char[this_char]) || "";
+		b = get_html(""+b);
 		
 		res_ele.appendChild(tr([this_char, a, b]));
 	}
