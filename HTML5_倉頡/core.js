@@ -146,6 +146,8 @@ var changjie1;
 var changjie2a;
 var cangjie_char = {}; //get key from char
 var cangjie_key = {};  //get cahr from list
+
+var using_charmap = null;
 res_onload_all = function(){
 	/**/
 	//====
@@ -155,6 +157,7 @@ res_onload_all = function(){
 	// main = cangjie_char
 	
 	//====
+	using_charmap = changjie2a;
 }
 
 var id_main = [
@@ -215,7 +218,6 @@ function active(genNext){
 		ele_ch.innerHTML = arr_ch.join("<br>");
 	}
 	function isInTarget(charcode){
-		console.log(targetKey, charcode);
 		if(Array.isArray(targetKey)){
 			return targetKey.indexOf(charcode) != -1;
 		} else {
@@ -369,7 +371,7 @@ function active2_extra(getNextChar){ //func should avoid repeat issue
 		}
 		if(this_keys == null){
 			this_char = getNextChar();
-			this_keys = arr_to_obj(cangjie_char[this_char]); //DATA
+			this_keys = arr_to_obj(using_charmap[this_char]); //DATA
 			div_main[0].innerHTML = this_char;
 			i = 0;
 		}
@@ -393,7 +395,7 @@ function active2_extra(getNextChar){ //func should avoid repeat issue
 
 function str_filter(str){ //cangjie_char
 	return str.split('').filter(function(word){
-		return cangjie_char[word] != null;
+		return using_charmap[word] != null;
 	}).join('');
 }
 
