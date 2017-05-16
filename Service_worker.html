@@ -1,0 +1,60 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!---
+
+note: 
+
+- notification display only after icon image is loaded
+    setTimeout close may not work when .close() called before display
+
+-->
+<pre>
+chrome://inspect/#service-workers
+chrome://serviceworker-internals
+
+Simple Notification <button onclick="f()">Click</button>
+
+<button onclick="setTimeout(f,3000)">After 3 seconds</button>
+
+<button onclick="f2()">f2()</button>
+</pre>
+<script>
+Notification.requestPermission().then(console.log);
+// granted, denied, or default
+
+function f(){
+
+var n = new Notification("Hello\naasd\tByebye😋",{
+	icon: "http://globalgamejam.org/sites/default/files/styles/game_sidebar__normal/public/game/featured_image/promo_5.png?itok=9dymM8JD",
+	
+});
+//setTimeout(function(){n.close()}, 1000);
+console.log("hihi")
+
+}
+
+function f2(){
+
+navigator.serviceWorker.register('https://dk88711.github.io/sw.js');
+Notification.requestPermission(function(result) {
+  if (result === 'granted') {
+    navigator.serviceWorker.ready.then(function(registration) {
+      registration.showNotification('Notification with ServiceWorker');
+    });
+  }
+});
+
+}
+
+/*
+var n22 = new Notification("Hello😋",{
+	icon: "http://globalgamejam.org/sites/default/files/styles/game_sidebar__normal/public/game/featured_image/promo_5.png?itok=9dymM8JD",
+	//image:"https://mdn.mozillademos.org/files/10819/notification-bubble.png",
+	body: "byebyebyebyebyebyebyeby\nebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebye\n\n",
+	badge:"https://mdn.mozillademos.org/files/10819/notification-bubble.png",
+	
+});
+*/
+
+
+</script>
