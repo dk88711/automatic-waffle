@@ -1,60 +1,73 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!---
-
-note: 
-
-- notification display only after icon image is loaded
-    setTimeout close may not work when .close() called before display
-
--->
 <pre>
 chrome://inspect/#service-workers
 chrome://serviceworker-internals
 
-Simple Notification <button onclick="f()">Click</button>
+<button onclick="after3sec();">After some seconds</button>
 
-<button onclick="setTimeout(f,3000)">After 3 seconds</button>
-
-<button onclick="f2()">f2()</button>
 </pre>
+
+
 <script>
-Notification.requestPermission().then(console.log);
-// granted, denied, or default
-
-function f(){
-
-var n = new Notification("Hello\naasd\tByebye😋",{
-	icon: "http://globalgamejam.org/sites/default/files/styles/game_sidebar__normal/public/game/featured_image/promo_5.png?itok=9dymM8JD",
-	
-});
-//setTimeout(function(){n.close()}, 1000);
-console.log("hihi")
-
+function after3sec(){
+	navigator.serviceWorker.controller.postMessage({
+		title: "HiiHii\n 8888",
+		delay: 1500
+	});
 }
 
-function f2(){
-
-navigator.serviceWorker.register('https://dk88711.github.io/sw.js');
-Notification.requestPermission(function(result) {
-  if (result === 'granted') {
-    navigator.serviceWorker.ready.then(function(registration) {
-      registration.showNotification('Notification with ServiceWorker');
-    });
-  }
-});
-
+self.onmessage = function(e){
+	console.log("main onmessage", e);
+	
+	
 }
 
-/*
-var n22 = new Notification("Hello😋",{
-	icon: "http://globalgamejam.org/sites/default/files/styles/game_sidebar__normal/public/game/featured_image/promo_5.png?itok=9dymM8JD",
-	//image:"https://mdn.mozillademos.org/files/10819/notification-bubble.png",
-	body: "byebyebyebyebyebyebyeby\nebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebyebye\n\n",
-	badge:"https://mdn.mozillademos.org/files/10819/notification-bubble.png",
-	
-});
-*/
+function s_worker_setup(){
+	navigator.serviceWorker.register('sw.js')
+	.then(function(registration){
+		console.log("registration", registration);
+		
+		var channel = new MessageChannel();
+		
+		//	channel.port1.onmessage = function(e){
+		//		console.log("p1 onmessage", e);
+		//		
+		//		//channel.port1.postMessage("123");
+		//	}
+		//	
+		//	registration.active.postMessage("123", [channel.port2]);
+		
+	});
+}
+
+addEventListener("DOMContentLoaded", s_worker_setup);
 
 
+//============================
+function ajax_load(url, load_handler, error_handler){ //GET
+	//call load_handler(responseText, xhr) 
+	//    when xhr.status == 200 or 304
+	// otherwise call error_handler(xhr)
+	// when xhr.readyState == 4
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4) {
+			if (this.status == 200 || this.status == 304
+				|| /*detect if it is local file*/
+				  (this.status == 0 && this.responseURL)) {
+				(load_handler)?
+				load_handler(this.responseText, this) :
+				console.log(this);
+			}
+			else {
+				(error_handler)?
+				error_handler(this) :
+				console.warn(this);
+			}
+		}
+	};
+	xhttp.open("GET", url, true);
+	xhttp.send();
+}
 </script>
