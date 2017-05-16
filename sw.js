@@ -24,9 +24,7 @@ self.onmessage = function(e){
 	var o = e.data;
 	
 	setTimeout(function(){
-		registration.showNotification(o.title,{
-			requireInteraction: true,
-		})
+		registration.showNotification(o.title,o.options)
 		.then(function(){
 			
 		});

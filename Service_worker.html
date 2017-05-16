@@ -6,6 +6,9 @@ chrome://serviceworker-internals
 
 <button onclick="after3sec();">After some seconds</button>
 
+
+<button onclick="instant();">instant</button>
+
 </pre>
 
 
@@ -13,7 +16,22 @@ chrome://serviceworker-internals
 function after3sec(){
 	navigator.serviceWorker.controller.postMessage({
 		title: "HiiHii\n 8888",
-		delay: 1500
+		delay: 1500,
+		options: {
+			requireInteraction: true
+		}
+	});
+}
+
+function instant(){
+	navigator.serviceWorker.controller.postMessage({
+		title: "Instant\ninstant",
+		delay: 0,
+		options: {
+			requireInteraction: true,
+			actions: [{action: "yes",title: "yes"}, 
+				{action: "no",title: "no"}],
+		}
 	});
 }
 
