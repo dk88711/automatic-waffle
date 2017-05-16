@@ -34,10 +34,12 @@ self.onmessage = function(e){
 
 onnotificationclick = function(e){
 	console.log("onnotificationclick", e);
+	var event = e;
 	e.waitUntil(clients.matchAll({type:"window"})
 		.then(function(e){
 			console.log("windows", e);
 			focus_window(e);
+			event.notification.close();
 		})
 	);
 }
